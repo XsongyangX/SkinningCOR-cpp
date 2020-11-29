@@ -14,10 +14,8 @@
 
 #include "Mesh.h"
 
-// Struct of a pair of bone and its weight
-typedef struct __bone_weight_pair
-{
-    int index;
+typedef struct {
+    int boneIndex;
     float weight;
 } BoneWeight;
 
@@ -25,9 +23,12 @@ typedef struct __bone_weight_pair
 extern "C"
 {
     // creates a mesh with cpp
-    CENTER_OF_ROTATION_API Mesh* CreateMesh(float vertices[][3], int vertexCount,
-        int triangles[][3], int triangleCount,
-        BoneWeight* weights[], int maxBonePerVertex, int boneCount);
+    CENTER_OF_ROTATION_API Mesh* CreateMesh(
+        float* vertices, int vertexCount,
+        int* triangles, int triangleCount,
+        BoneWeight* weights, uint8_t* bones,
+        int boneCount
+        );
 
     CENTER_OF_ROTATION_API void DestroyMesh(Mesh * mesh);
 }

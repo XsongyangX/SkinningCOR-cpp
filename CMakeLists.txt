@@ -17,7 +17,8 @@ list(REMOVE_ITEM src main.cpp)
 
 include(GNUInstallDirs)
 
-find_package (Eigen3 3.3 REQUIRED NO_MODULE)
+set(Eigen3_DIR "$ENV{VCPKG_ROOT}/installed/x86-windows/share/eigen3")
+find_package (Eigen3 REQUIRED NO_MODULE)
 
 #add_library(${PROJECT_NAME} SHARED ${src})
 add_library(${PROJECT_NAME} ${src})
