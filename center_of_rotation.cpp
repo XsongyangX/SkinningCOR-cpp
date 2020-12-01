@@ -71,8 +71,8 @@ CENTER_OF_ROTATION_API Mesh *CreateMesh(
     logFile << faces.topRows(5) << std::endl
             << std::endl;
 
-    // bone weights
-    Eigen::SparseMatrix<float> boneWeights(vertexCount, boneCount);
+    // bone weights, one column of weights per vertex
+    Eigen::SparseMatrix<float> boneWeights(boneCount, vertexCount);
 
     // debug
     logFile << "Bone count: " << boneCount << std::endl;
@@ -94,11 +94,11 @@ CENTER_OF_ROTATION_API Mesh *CreateMesh(
         {
             BoneWeight bone;
             bone = weights[index];
-            triplets.push_back(Eigen::Triplet<float>(i, bone.boneIndex, bone.weight));
+            triplets.push_back(Eigen::Triplet<float>(bone.boneIndex, i, bone.weight));
 
             // debug
             if (i < 5)
-                logFile << "Triplet: " << i << ", " << bone.boneIndex << ", " << bone.weight << std::endl;
+                logFile << "Triplet: " << bone.boneIndex << ", " << i << ", " << bone.weight << std::endl;
 
             index++;
         }

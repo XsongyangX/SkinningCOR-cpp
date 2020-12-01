@@ -15,7 +15,7 @@ private:
     const Eigen::MatrixXf vertices;
     const Eigen::MatrixXi triangles;
 
-    // skin weights
+    // skin weights, col is vector of weights for one vertex
     const Eigen::SparseMatrix<float> weights;
 
     // centers of rotation
