@@ -14,7 +14,7 @@
 
 #include "Mesh.h"
 
-typedef struct {
+typedef struct _boneWeight {
     int boneIndex;
     float weight;
 } BoneWeight;
@@ -30,6 +30,24 @@ extern "C"
         int boneCount
         );
 
+    // for debugging and sanity
+    CENTER_OF_ROTATION_API const char* HasFailedMeshConstruction(Mesh * mesh);
+    // because the message was allocated on the heap
+    CENTER_OF_ROTATION_API void FreeErrorMessage(const char* message);
+
+    // for memory management
     CENTER_OF_ROTATION_API void DestroyMesh(Mesh * mesh);
+
+    // get debug data
+    CENTER_OF_ROTATION_API int GetRestVertexCount(Mesh * mesh);
+    CENTER_OF_ROTATION_API int GetRestFaceCount(Mesh * mesh);
+    CENTER_OF_ROTATION_API int GetSubdividedVertexCount(Mesh * mesh);
+    CENTER_OF_ROTATION_API int GetSubdividedFaceCount(Mesh * mesh);
+
+    // get centers of rotation
+    CENTER_OF_ROTATION_API int GetCenterCount(Mesh * mesh);
+    // vertices pointer should point to an allocated Vector3[] in C#
+    CENTER_OF_ROTATION_API void GetCentersOfRotation(Mesh * mesh,
+        float * vertices, int vertexCount);
 }
 

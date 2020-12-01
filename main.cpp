@@ -44,4 +44,9 @@ int main(int argc, char * argv[])
         weights, bones,
         boneCount
     );
+
+    std::cout << mesh->GetCentersOfRotation() << std::endl;
+    auto message = HasFailedMeshConstruction(mesh);
+    std::cout << message << std::endl;
+    FreeErrorMessage(message);
 }

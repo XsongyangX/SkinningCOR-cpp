@@ -20,15 +20,17 @@ include(GNUInstallDirs)
 set(Eigen3_DIR "$ENV{VCPKG_ROOT}/installed/x86-windows/share/eigen3")
 find_package (Eigen3 REQUIRED NO_MODULE)
 
-#add_library(${PROJECT_NAME} SHARED ${src})
 add_library(${PROJECT_NAME} ${src})
 target_include_directories(${PROJECT_NAME} PRIVATE .)
 target_link_libraries(${PROJECT_NAME} Eigen3::Eigen)
 
+option(BUILD_BINARY "Whether to generate an executable to test the dll" ON)
 
+if(BUILD_BINARY)
 add_executable(${PROJECT_NAME}-bin main.cpp)
 target_link_libraries(${PROJECT_NAME}-bin ${PROJECT_NAME})
 target_include_directories(${PROJECT_NAME}-bin PRIVATE .)
+endif()
 
 # change the executable name
 #set_target_properties(${PROJECT_NAME}-bin
