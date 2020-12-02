@@ -4,7 +4,7 @@
 
 #include "Mesh.h"
 #define CENTER_OF_ROTATION_DEBUG
-#include "center_of_rotation.h"
+#include "center_of_rotation_api.h"
 
 using namespace std;
 using namespace Eigen;
@@ -45,10 +45,12 @@ int main(int argc, char * argv[])
         uniqueBones
     );
 
-    std::cout << mesh->GetCentersOfRotation() << std::endl;
     auto message = HasFailedMeshConstruction(mesh);
     std::cout << message << std::endl;
     FreeErrorMessage(message);
 
-    std::cout << "Similarity " << mesh->Similarity(atoi(argv[1]), atoi(argv[2])) << std::endl;
+    std::cout << mesh->GetCentersOfRotation() << std::endl;
+    auto centerErrorMessage = HasFailedGettingCentersOfRotation(mesh);
+    std::cout << centerErrorMessage << std::endl;
+    FreeErrorMessage(centerErrorMessage);
 }

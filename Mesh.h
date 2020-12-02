@@ -9,7 +9,6 @@ class Mesh
 private:
     // debug
     bool failedConstruction = false;
-    std::string failureContextMessage;
 
     // rest pose
     const Eigen::MatrixXf vertices;
@@ -30,14 +29,21 @@ private:
     // position in this matrix represents indices of all vertices
     Eigen::SparseMatrix<float> subdividedWeights;
 
-public:
+    // compute center of rotation for vertex at the given index
+    void ComputeCenterOfRotation(int index);
 
+    // weight of a triangle is the average of its vertices
+    Eigen::SparseMatrix<float> FindTriangleWeight(int triangleIndex);
+    Eigen::SparseMatrix<float> FindVertexWeight(int vertexIndex);
+
+public:
     // debug
+    std::string failureContextMessage;
+
 #pragma region
-    std::string HasFailedConstruction()
-    { 
-        if (failedConstruction) return failureContextMessage;
-        else return std::string("No problem.");
+    void ResetFailureMessage()
+    {
+        failureContextMessage = "";
     }
 
     int GetRestVertexCount() {return (int) vertices.rows();}
@@ -58,7 +64,12 @@ public:
     }
 
     Mesh(Eigen::MatrixXf vertices, Eigen::MatrixXi triangles, Eigen::SparseMatrix<float> weights)
-        : vertices(vertices), triangles(triangles), weights(weights) {}
+        : vertices(vertices), triangles(triangles), weights(weights) 
+    {
+        Eigen::MatrixXf rotations(vertices.rows(), 3);
+        this->centersOfRotation = rotations;
+        this->failureContextMessage = "";
+    }
     ~Mesh(){}
 
     // Compute the centers of rotations and store them in a private field

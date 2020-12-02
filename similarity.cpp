@@ -49,3 +49,9 @@ float ComputeSimilarity(const Eigen::SparseMatrix<float> & matrix1, int colIndex
     }
     return similarity;
 }
+
+float ComputeVertexFaceSimilarity(const Eigen::SparseMatrix<float> & vertexWeight,
+    const Eigen::SparseMatrix<float> & triangleWeight)
+{
+    return ComputeSimilarity(vertexWeight, 0, triangleWeight, 0);
+}

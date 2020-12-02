@@ -1,6 +1,6 @@
 #define CENTER_OF_ROTATION_EXPORTS
 
-#include "center_of_rotation.h"
+#include "center_of_rotation_api.h"
 #include "Mesh.h"
 
 #include <Eigen/Dense>
@@ -116,13 +116,23 @@ CENTER_OF_ROTATION_API Mesh *CreateMesh(
     return new Mesh(verts, faces, boneWeights);
 }
 
-CENTER_OF_ROTATION_API const char* HasFailedMeshConstruction(Mesh* mesh)
+// empty string means no error
+const char* GetFailureMessage(Mesh* mesh)
 {
-    auto error = mesh->HasFailedConstruction();
+    auto error = mesh->failureContextMessage;
     auto length = std::strlen(error.c_str()) + 1;
     auto message = new char[length];
     strcpy_s(message, length, error.c_str());
+
+    // reset failure message in mesh to empty string
+    mesh->ResetFailureMessage();
+
     return message;
+}
+
+CENTER_OF_ROTATION_API const char* HasFailedMeshConstruction(Mesh * mesh)
+{
+    return GetFailureMessage(mesh);
 }
 
 CENTER_OF_ROTATION_API void FreeErrorMessage(const char* message)
@@ -175,4 +185,10 @@ CENTER_OF_ROTATION_API void GetCentersOfRotation(Mesh * mesh,
         vertices += 3; // next struct of 3 floats
     }
     
+}
+
+// Empty string means success
+CENTER_OF_ROTATION_API const char * HasFailedGettingCentersOfRotation(Mesh * mesh)
+{
+    return GetFailureMessage(mesh);
 }

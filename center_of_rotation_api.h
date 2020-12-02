@@ -49,5 +49,6 @@ extern "C"
     // vertices pointer should point to an allocated Vector3[] in C#
     CENTER_OF_ROTATION_API void GetCentersOfRotation(Mesh * mesh,
         float * vertices, int vertexCount);
+    CENTER_OF_ROTATION_API const char * HasFailedGettingCentersOfRotation(Mesh * mesh);
 }
 
