@@ -1,6 +1,7 @@
 #include "Mesh.h"
 #include "similarity.h"
 #include "area.h"
+#include "serialize.h"
 
 #include <Eigen/Dense>
 
@@ -125,4 +126,14 @@ void Mesh::ComputeCenterOfRotation(int vertexIndex)
         throw std::exception(message.c_str());
     }
     this->centersOfRotation.row(vertexIndex) = nominator / denominator;
+}
+
+void Mesh::Serialize(const std::string & path)
+{
+    SerializeVertices(vertices, path + std::string(".vertices"));
+    SerializeTriangles(triangles, path + std::string(".triangles"));
+    SerializeWeights(weights, path + std::string(".weights"));
+
+    if (areCentersComputed)
+        SerializeVertices(centersOfRotation, path + std::string(".centers"));
 }

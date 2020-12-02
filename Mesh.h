@@ -54,6 +54,7 @@ public:
     int GetCenterCount();
     const Eigen::MatrixXf & GetCentersOfRotation();
 
+    void Serialize(const std::string & path);
 #pragma endregion
 
     // null mesh for failed construction
@@ -67,6 +68,7 @@ public:
         : vertices(vertices), triangles(triangles), weights(weights) 
     {
         Eigen::MatrixXf rotations(vertices.rows(), 3);
+        rotations.setZero();
         this->centersOfRotation = rotations;
         this->failureContextMessage = "";
     }

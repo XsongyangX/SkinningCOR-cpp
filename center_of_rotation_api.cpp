@@ -192,3 +192,9 @@ CENTER_OF_ROTATION_API const char * HasFailedGettingCentersOfRotation(Mesh * mes
 {
     return GetFailureMessage(mesh);
 }
+
+// Serialization
+CENTER_OF_ROTATION_API void SerializeMesh(Mesh * mesh, const char * path)
+{
+    mesh->Serialize(std::string(path));
+}
