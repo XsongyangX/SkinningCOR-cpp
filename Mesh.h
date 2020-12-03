@@ -30,7 +30,7 @@ private:
     Eigen::SparseMatrix<float> subdividedWeights;
 
     // compute center of rotation for vertex at the given index
-    void ComputeCenterOfRotation(int index);
+    Eigen::Vector3f ComputeCenterOfRotation(int index, bool* hasNoCenter);
 
     // weight of a triangle is the average of its vertices
     Eigen::SparseMatrix<float> FindTriangleWeight(int triangleIndex);
@@ -67,9 +67,6 @@ public:
     Mesh(Eigen::MatrixXf vertices, Eigen::MatrixXi triangles, Eigen::SparseMatrix<float> weights)
         : vertices(vertices), triangles(triangles), weights(weights) 
     {
-        Eigen::MatrixXf rotations(vertices.rows(), 3);
-        rotations.setZero();
-        this->centersOfRotation = rotations;
         this->failureContextMessage = "";
     }
     ~Mesh(){}

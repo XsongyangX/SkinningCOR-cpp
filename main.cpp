@@ -49,16 +49,16 @@ int main(int argc, char * argv[])
     // );
     
     // from disk
-    auto mesh = ReadMesh(string("C:/Users/Song/Documents/UDEM/ift6113/project/skinning_cor/logs/Beta_Joints"));
+    auto mesh = ReadMesh(string("C:/Users/Song/Documents/UDEM/ift6113/project/skinning_cor/logs/Beta_Surface"));
 
     auto message = HasFailedMeshConstruction(&mesh);
     std::cout << message << std::endl;
     FreeErrorMessage(message);
 
-    // std::cout << mesh.GetCentersOfRotation() << std::endl;
-    // auto centerErrorMessage = HasFailedGettingCentersOfRotation(&mesh);
-    // std::cout << centerErrorMessage << std::endl;
-    // FreeErrorMessage(centerErrorMessage);
+    std::cout << mesh.GetCentersOfRotation() << std::endl;
+    auto centerErrorMessage = HasFailedGettingCentersOfRotation(&mesh);
+    std::cout << centerErrorMessage << std::endl;
+    FreeErrorMessage(centerErrorMessage);
 
     // auto weights = ReadWeights(string("C:/Users/Song/Documents/UDEM/ift6113/project/skinning_cor/logs/Beta_Joints"));
     // ifstream file(string("C:/Users/Song/Documents/UDEM/ift6113/project/skinning_cor/logs/Beta_Joints") + string(".weights.size"));

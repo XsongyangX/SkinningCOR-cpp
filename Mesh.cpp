@@ -31,19 +31,34 @@ void Mesh::ComputeCentersOfRotation()
 {
     areCentersComputed = true;
 
+    int centerCount = 0;
+    std::vector<Eigen::Vector3f> computed;
+
     // may distribute this into threads
     for (int i = 0; i < (int) vertices.rows(); i++)
     {
         try {
-            ComputeCenterOfRotation(i);
+            bool noCenter = false;
+            auto center = ComputeCenterOfRotation(i, &noCenter);
+
+            if (noCenter) continue;
+            centerCount++;
+            computed.push_back(center);
         }
         catch (std::exception e)
         {
             this->failureContextMessage = e.what();
+            
             return;
         }
     }
-    
+
+    Eigen::MatrixXf centers(centerCount, 3);
+    for (int i = 0; i < centerCount; i++)
+    {
+        centers.row(i) = computed[i];
+    }
+    this->centersOfRotation = centers;
 }
 
 // Compute the similarity of skinning weights between a vertex and a triangle
@@ -92,8 +107,17 @@ Eigen::SparseMatrix<float> Mesh::FindTriangleWeight(int triangleIndex)
 }
 
 // Find the center of rotation for this vertex and store it into the matrix
-void Mesh::ComputeCenterOfRotation(int vertexIndex)
+Eigen::Vector3f Mesh::ComputeCenterOfRotation(int vertexIndex, bool * hasNoCenter)
 {
+    // check if this vertex has only one bone influence
+    // if so, there is no center of rotation
+    auto boneCount = this->weights.col(vertexIndex).nonZeros();
+    if (boneCount == 1)
+    {
+        *hasNoCenter = true;
+        return Eigen::Vector3f();
+    }
+
     // store progress
     Eigen::Vector3f nominator;
     nominator.setZero();
@@ -125,7 +149,7 @@ void Mesh::ComputeCenterOfRotation(int vertexIndex)
             + std::to_string(denominator);
         throw std::exception(message.c_str());
     }
-    this->centersOfRotation.row(vertexIndex) = nominator / denominator;
+    return nominator / denominator;
 }
 
 void Mesh::Serialize(const std::string & path)
