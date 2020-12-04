@@ -122,7 +122,12 @@ const char* GetFailureMessage(Mesh* mesh)
     auto error = mesh->failureContextMessage;
     auto length = std::strlen(error.c_str()) + 1;
     auto message = new char[length];
+
+#ifdef __GNUC__
+    strcpy(message, error.c_str());
+#else
     strcpy_s(message, length, error.c_str());
+#endif
 
     // reset failure message in mesh to empty string
     mesh->ResetFailureMessage();
