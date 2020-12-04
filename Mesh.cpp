@@ -29,21 +29,25 @@ const Eigen::MatrixXf &Mesh::GetCentersOfRotation()
 // Compute COR according to the paper
 void Mesh::ComputeCentersOfRotation()
 {
-    areCentersComputed = true;
-
     int centerCount = 0;
+    this->indexOfCenter.clear();
     std::vector<Eigen::Vector3f> computed;
 
     // may distribute this into threads
     for (int i = 0; i < (int) vertices.rows(); i++)
     {
         try {
-            bool noCenter = false;
-            auto center = ComputeCenterOfRotation(i, &noCenter);
-
-            if (noCenter) continue;
-            centerCount++;
+            // check if vertex has only one bone
+            if (1 == this->weights.col(i).nonZeros())
+            {
+                this->indexOfCenter.push_back(-1);
+                continue;
+            }
+            auto center = ComputeCenterOfRotation(i);
             computed.push_back(center);
+            this->indexOfCenter.push_back(centerCount);
+
+            centerCount++;
         }
         catch (std::exception e)
         {
@@ -59,6 +63,8 @@ void Mesh::ComputeCentersOfRotation()
         centers.row(i) = computed[i];
     }
     this->centersOfRotation = centers;
+
+    areCentersComputed = true;
 }
 
 // Compute the similarity of skinning weights between a vertex and a triangle
@@ -107,14 +113,14 @@ Eigen::SparseMatrix<float> Mesh::FindTriangleWeight(int triangleIndex)
 }
 
 // Find the center of rotation for this vertex and store it into the matrix
-Eigen::Vector3f Mesh::ComputeCenterOfRotation(int vertexIndex, bool * hasNoCenter)
+// Assumes vertex has more than one bone
+Eigen::Vector3f Mesh::ComputeCenterOfRotation(int vertexIndex)
 {
     // check if this vertex has only one bone influence
     // if so, there is no center of rotation
     auto boneCount = this->weights.col(vertexIndex).nonZeros();
     if (boneCount == 1)
     {
-        *hasNoCenter = true;
         return Eigen::Vector3f();
     }
 

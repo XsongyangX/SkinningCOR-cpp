@@ -19,6 +19,7 @@ private:
 
     // centers of rotation
     bool areCentersComputed = false;
+    std::vector<int> indexOfCenter;
     Eigen::MatrixXf centersOfRotation;
 
     // additional subdivision
@@ -30,7 +31,7 @@ private:
     Eigen::SparseMatrix<float> subdividedWeights;
 
     // compute center of rotation for vertex at the given index
-    Eigen::Vector3f ComputeCenterOfRotation(int index, bool* hasNoCenter);
+    Eigen::Vector3f ComputeCenterOfRotation(int index);
 
     // weight of a triangle is the average of its vertices
     Eigen::SparseMatrix<float> FindTriangleWeight(int triangleIndex);
