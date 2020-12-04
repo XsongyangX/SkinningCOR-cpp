@@ -5,7 +5,7 @@
 
 #include <Eigen/Dense>
 
-#define DIVISION_BY_ZERO_THRESHOLD 1e-5
+#define DIVISION_BY_ZERO_THRESHOLD 1e-10
 
 // Returns the number of centers of rotations, computes them if not done yet
 int Mesh::GetCenterCount()
