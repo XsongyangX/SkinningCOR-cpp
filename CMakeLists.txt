@@ -13,7 +13,7 @@ set(CMAKE_CXX_STANDARD 17)
 include_directories(${PROJECT_SOURCE_DIR})
 
 file(GLOB src "*.h" "*.cpp")
-list(REMOVE_ITEM src main.cpp)
+list(FILTER src EXCLUDE REGEX "main.cpp$")
 
 include(GNUInstallDirs)
 
