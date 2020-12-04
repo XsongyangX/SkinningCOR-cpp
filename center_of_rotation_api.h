@@ -2,7 +2,7 @@
 
 #ifdef CENTER_OF_ROTATION_EXPORTS
     #ifdef __GNUC__
-        #define CENTER_OF_ROTATION_API __attribute__ ((dllexport))
+        #define CENTER_OF_ROTATION_API __attribute__((visibility("default")))
     #else
         #define CENTER_OF_ROTATION_API __declspec(dllexport)
     #endif
@@ -12,7 +12,7 @@
     #define CENTER_OF_ROTATION_API
 #else
     #ifdef __GNUC__
-        #define CENTER_OF_ROTATION_API __attribute__ ((dllimport))
+        #define CENTER_OF_ROTATION_API
     #else
         #define CENTER_OF_ROTATION_API __declspec(dllimport)
     #endif

@@ -17,4 +17,5 @@ Eigen::MatrixXf ReadVertices(const std::string & path);
 Eigen::MatrixXi ReadTriangles(const std::string & path);
 Eigen::SparseMatrix<float> ReadWeights(const std::string & path, int rows, int cols);
 
-Mesh ReadMesh(const std::string & path);
+// allocated with new
+Mesh* ReadMesh(const std::string & path);

@@ -187,7 +187,7 @@ Eigen::MatrixXi ReadTriangles(const std::string &path)
     return triangles;
 }
 
-Mesh ReadMesh(const string & path)
+Mesh* ReadMesh(const string & path)
 {
     auto vertices = ReadVertices(path);
     auto triangles = ReadTriangles(path);
@@ -215,5 +215,5 @@ Mesh ReadMesh(const string & path)
 
     auto weights = ReadWeights(path, rows, cols);
 
-    return Mesh(vertices, triangles, weights);
+    return new Mesh(vertices, triangles, weights);
 }

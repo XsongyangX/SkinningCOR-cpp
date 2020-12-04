@@ -60,7 +60,7 @@ int main(int argc, char * argv[])
     Mesh * mesh;
     try
     {
-        mesh = &ReadMesh(path);
+        mesh = ReadMesh(path);
     }
     catch (exception e)
     {
@@ -79,4 +79,5 @@ int main(int argc, char * argv[])
 
     mesh->Serialize(path);
     cout << "Mesh serialized again at " << path << endl;
+    delete mesh;
 }
