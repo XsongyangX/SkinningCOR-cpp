@@ -31,11 +31,14 @@ private:
     Eigen::SparseMatrix<float> subdividedWeights;
 
     // compute center of rotation for vertex at the given index
-    Eigen::Vector3f ComputeCenterOfRotation(int index);
+    // carry a cache to hasten computations
+    Eigen::Vector3f ComputeCenterOfRotation(int index,
+        const std::vector<Eigen::SparseVector<float>> & cacheTriangleWeights,
+        const std::vector<float> & cacheTriangleAreas);
 
     // weight of a triangle is the average of its vertices
-    const Eigen::SparseVector<float> FindTriangleWeight(int triangleIndex);
-    const Eigen::SparseVector<float> FindVertexWeight(int vertexIndex);
+    void FindTriangleWeight(int triangleIndex,
+        std::vector<Eigen::SparseVector<float>> & cacheTriangleWeights);
 
 public:
     // debug
@@ -74,9 +77,6 @@ public:
 
     // Compute the centers of rotations and store them in a private field
     void ComputeCentersOfRotation();
-
-    // Compute the similarity value between two vertices, using their bone weights
-    float Similarity(int vertexIndex1, int vertexIndex2);
 
     // Compute the skinning weight distance between two vertices: norm(wi - wj)
     float SkinningWeightDistance(int vertexIndex1, int vertexIndex2);

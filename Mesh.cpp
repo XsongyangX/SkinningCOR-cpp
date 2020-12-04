@@ -30,9 +30,31 @@ const Eigen::MatrixXf &Mesh::GetCentersOfRotation()
 void Mesh::ComputeCentersOfRotation()
 {
     int centerCount = 0;
+
+    // Some vertices have no center of rotation.
+    // So this acts like an offset into the compact
+    // matrix of center coords
     this->indexOfCenter.clear();
     std::vector<Eigen::Vector3f> computed;
 
+    // computation cache
+    std::vector<Eigen::SparseVector<float>> cacheTriangleWeights;
+    std::vector<float> cacheTriangleAreas;
+
+    // fill up the cache
+    for (int i = 0; i < GetRestFaceCount(); i++)
+    {
+        FindTriangleWeight(i, cacheTriangleWeights);
+        
+        const auto & triangle = triangles.row(i);
+
+        Eigen::Vector3f vertexA = vertices.row(triangle.x());
+        Eigen::Vector3f vertexB = vertices.row(triangle.y());
+        Eigen::Vector3f vertexC = vertices.row(triangle.z());
+
+        cacheTriangleAreas.push_back(area(vertexA, vertexB, vertexC));
+    }
+    
     // may distribute this into threads
     for (int i = 0; i < (int) vertices.rows(); i++)
     {
@@ -43,7 +65,8 @@ void Mesh::ComputeCentersOfRotation()
                 this->indexOfCenter.push_back(-1);
                 continue;
             }
-            auto center = ComputeCenterOfRotation(i);
+            auto center = ComputeCenterOfRotation(i, 
+                cacheTriangleWeights, cacheTriangleAreas);
             computed.push_back(center);
             this->indexOfCenter.push_back(centerCount);
 
@@ -67,62 +90,28 @@ void Mesh::ComputeCentersOfRotation()
     areCentersComputed = true;
 }
 
-// Compute the similarity of skinning weights between a vertex and a triangle
-float Mesh::Similarity(int vertexIndex, int triangleIndex)
-{
-
-    auto vertexWeight = FindVertexWeight(vertexIndex);
-    auto triangleWeight = FindTriangleWeight(triangleIndex);
-
-    return ComputeSimilarity(vertexWeight, triangleWeight);
-}
-
-const Eigen::SparseVector<float> Mesh::FindVertexWeight(int vertexIndex)
-{
-    // Check if the vertices belong to the subdivided mesh
-    auto restVertexCount = GetRestVertexCount();
-
-    Eigen::SparseVector<float> vertexWeight;
-
-    // check if the vertex belongs to a subdivision
-    if (vertexIndex > restVertexCount - 1)
-        vertexWeight = this->subdividedWeights.col(vertexIndex - restVertexCount);
-    else
-        vertexWeight = this->weights.col(vertexIndex);
-
-    return vertexWeight;
-}
-
-const Eigen::SparseVector<float> Mesh::FindTriangleWeight(int triangleIndex)
+void Mesh::FindTriangleWeight(int triangleIndex,
+    std::vector<Eigen::SparseVector<float>> & cacheTriangleWeights)
 {
     auto restTriangleCount = GetRestFaceCount();
     
-    Eigen::Vector3i triangle;
-
-    // check if the triangle is subdivided
-    if (triangleIndex > restTriangleCount - 1)
-        triangle = this->subdividedTriangles.row(triangleIndex - restTriangleCount);
-    else
-        triangle = this->triangles.row(triangleIndex);
+    Eigen::Vector3i triangle = this->triangles.row(triangleIndex);
 
     Eigen::SparseVector<float> triangleWeight = 
-        (FindVertexWeight(triangle.x()) + FindVertexWeight(triangle.y())
-        + FindVertexWeight(triangle.z())) / 3;
+        (weights.col(triangle.x()) + weights.col(triangle.y())
+        + weights.col(triangle.z())) / 3;
 
-    return triangleWeight;
+    cacheTriangleWeights.push_back(triangleWeight);
 }
 
 // Find the center of rotation for this vertex and store it into the matrix
 // Assumes vertex has more than one bone
-Eigen::Vector3f Mesh::ComputeCenterOfRotation(int vertexIndex)
+Eigen::Vector3f Mesh::ComputeCenterOfRotation(int vertexIndex,
+    const std::vector<Eigen::SparseVector<float>> & cacheTriangleWeights,
+    const std::vector<float> & cacheTriangleAreas)
 {
-    // check if this vertex has only one bone influence
-    // if so, there is no center of rotation
-    auto boneCount = this->weights.col(vertexIndex).nonZeros();
-    if (boneCount == 1)
-    {
-        return Eigen::Vector3f();
-    }
+    // this vertex weight
+    Eigen::SparseVector<float> vertexWeight = this->weights.col(vertexIndex);
 
     // store progress
     Eigen::Vector3f nominator;
@@ -132,7 +121,7 @@ Eigen::Vector3f Mesh::ComputeCenterOfRotation(int vertexIndex)
     // loop on all triangles
     for (int i = 0; i < (int) triangles.rows(); i++)
     {
-        auto similarity = Similarity(vertexIndex, i);
+        auto similarity = ComputeSimilarity(vertexWeight, cacheTriangleWeights[i]);
 
         const auto & triangle = triangles.row(i);
 
@@ -140,7 +129,7 @@ Eigen::Vector3f Mesh::ComputeCenterOfRotation(int vertexIndex)
         Eigen::Vector3f vertexB = vertices.row(triangle.y());
         Eigen::Vector3f vertexC = vertices.row(triangle.z());
 
-        auto triangleArea = area(vertexA, vertexB, vertexC);
+        auto triangleArea = cacheTriangleAreas[i];
 
         nominator += similarity * (vertexA + vertexB + vertexC) / 3 * triangleArea;
         denominator += similarity * triangleArea;
