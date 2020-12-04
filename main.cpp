@@ -49,23 +49,34 @@ int main(int argc, char * argv[])
     // );
     
     // from disk
-    auto mesh = ReadMesh(string("C:/Users/Song/Documents/UDEM/ift6113/project/skinning_cor/logs/Beta_Surface"));
+    if (argc != 2)
+    {
+        cerr << "Usage: ./skinning_COR-bin path-to-file" << endl;
+        cerr << "ex: ./skinning_COR-bin ../../logs/Beta_Joints" << endl;
+        exit(1);
+    }
 
-    auto message = HasFailedMeshConstruction(&mesh);
+    auto path = string(argv[1]);
+    Mesh * mesh;
+    try
+    {
+        mesh = &ReadMesh(path);
+    }
+    catch (exception e)
+    {
+        cerr << e.what() << endl;
+        cerr << "Does the file exist and is readable?" << endl;
+        exit(1);
+    }
+    auto message = HasFailedMeshConstruction(mesh);
     std::cout << message << std::endl;
     FreeErrorMessage(message);
 
-    std::cout << mesh.GetCentersOfRotation() << std::endl;
-    auto centerErrorMessage = HasFailedGettingCentersOfRotation(&mesh);
+    std::cout << mesh->GetCentersOfRotation() << std::endl;
+    auto centerErrorMessage = HasFailedGettingCentersOfRotation(mesh);
     std::cout << centerErrorMessage << std::endl;
     FreeErrorMessage(centerErrorMessage);
 
-    // auto weights = ReadWeights(string("C:/Users/Song/Documents/UDEM/ift6113/project/skinning_cor/logs/Beta_Joints"));
-    // ifstream file(string("C:/Users/Song/Documents/UDEM/ift6113/project/skinning_cor/logs/Beta_Joints") + string(".weights.size"));
-
-    // string line;
-    // while (getline(file, line))
-    // {
-    //     cout << line << endl;
-    // }
+    mesh->Serialize(path);
+    cout << "Mesh serialized again at " << path << endl;
 }

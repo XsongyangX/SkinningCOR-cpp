@@ -86,7 +86,12 @@ std::vector<Eigen::Triplet<float>> read_triplets(const std::string &path)
     ifstream file;
     file.open(path);
 
-    assert(file.good());
+    if(!file.good())
+    {
+        file.close();
+        string message = string("Cannot open file at: ") + string(path);
+        throw exception(message.c_str());
+    }
 
     string line;
     while (getline(file, line))
@@ -117,7 +122,12 @@ Eigen::MatrixXf ReadVertices(const std::string &path)
     ifstream file;
     file.open(path + string(".vertices"));
 
-    assert(file.good());
+    if(!file.good())
+    {
+        file.close();
+        string message = string("Cannot open file at: ") + string(path) + string(".vertices");
+        throw exception(message.c_str());
+    }
 
     vector<vector<string>> lines;
 
@@ -147,7 +157,12 @@ Eigen::MatrixXi ReadTriangles(const std::string &path)
     ifstream file;
     file.open(path + string(".triangles"));
 
-    assert(file.good());
+    if(!file.good())
+    {
+        file.close();
+        string message = string("Cannot open file at: ") + string(path) + string(".triangles");
+        throw exception(message.c_str());
+    }
 
     vector<vector<string>> lines;
 
@@ -181,6 +196,14 @@ Mesh ReadMesh(const string & path)
 
     string size = path + string(".weights.size");
     fstream sizeFile(size);
+
+    if(!sizeFile.good())
+    {
+        sizeFile.close();
+        string message = string("Cannot open file at: ") + string(path) + string(".weights.size");
+        throw exception(message.c_str());
+    }
+
     string line;
     while (getline(sizeFile, line))
     {
