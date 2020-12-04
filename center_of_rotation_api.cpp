@@ -7,7 +7,7 @@
 #include <Eigen/Sparse>
 
 #include <vector>
-#include <fstream>
+// #include <fstream>
 #include <sstream>
 #include <string.h>
 
@@ -25,9 +25,9 @@ CENTER_OF_ROTATION_API Mesh *CreateMesh(
     Eigen::MatrixXf verts(vertexCount, 3);
 
     // debug
-    std::ofstream logFile;
-    logFile.open("C:/Users/Song/Documents/UDEM/ift6113/project/skinning_cor/logs/center_of_rotation.log");
-    logFile << "Vertex count: " << vertexCount << std::endl;
+    // std::ofstream logFile;
+    // logFile.open("C:/Users/Song/Documents/UDEM/ift6113/project/skinning_cor/logs/center_of_rotation.log");
+    // logFile << "Vertex count: " << vertexCount << std::endl;
 
     for (int i = 0; i < vertexCount; i++)
     {
@@ -37,15 +37,15 @@ CENTER_OF_ROTATION_API Mesh *CreateMesh(
         vertices += 3; // the pointer points to a struct of 3 floats
     }
 
-    // debug
-    logFile << verts.topRows(5) << std::endl
-            << std::endl;
+    // // debug
+    // logFile << verts.topRows(5) << std::endl
+    //         << std::endl;
 
     // faces
     Eigen::MatrixXi faces(triangleCount, 3);
 
-    // debug
-    logFile << "Triangle count: " << triangleCount << std::endl;
+    // // debug
+    // logFile << "Triangle count: " << triangleCount << std::endl;
 
     for (int i = 0; i < triangleCount; i++)
     {   
@@ -67,15 +67,15 @@ CENTER_OF_ROTATION_API Mesh *CreateMesh(
         triangles += 3; // points to a struct of 3 int
     }
 
-    // debug
-    logFile << faces.topRows(5) << std::endl
-            << std::endl;
+    // // debug
+    // logFile << faces.topRows(5) << std::endl
+    //         << std::endl;
 
     // bone weights, one column of weights per vertex
     Eigen::SparseMatrix<float> boneWeights(boneCount, vertexCount);
 
-    // debug
-    logFile << "Bone count: " << boneCount << std::endl;
+    // // debug
+    // logFile << "Bone count: " << boneCount << std::endl;
 
     std::vector<Eigen::Triplet<float>> triplets;
 
@@ -85,9 +85,9 @@ CENTER_OF_ROTATION_API Mesh *CreateMesh(
     {
         uint8_t bonesForThisVertex = bones[i];
 
-        // debug
-        if (i < 5)
-            logFile << "This vertex has this many bones:" << int(bonesForThisVertex) << std::endl;
+        // // debug
+        // if (i < 5)
+        //     logFile << "This vertex has this many bones:" << int(bonesForThisVertex) << std::endl;
 
         // for each bone on this vertex
         for (int j = 0; j < bonesForThisVertex; j++)
@@ -96,22 +96,22 @@ CENTER_OF_ROTATION_API Mesh *CreateMesh(
             bone = weights[index];
             triplets.push_back(Eigen::Triplet<float>(bone.boneIndex, i, bone.weight));
 
-            // debug
-            if (i < 5)
-                logFile << "Triplet: " << bone.boneIndex << ", " << i << ", " << bone.weight << std::endl;
+            // // debug
+            // if (i < 5)
+            //     logFile << "Triplet: " << bone.boneIndex << ", " << i << ", " << bone.weight << std::endl;
 
             index++;
         }
     }
 
-    // debug
-    logFile << "Right before setting from triplets" << std::endl;
+    // // debug
+    // logFile << "Right before setting from triplets" << std::endl;
 
     boneWeights.setFromTriplets(triplets.begin(), triplets.end());
 
-    logFile << std::endl;
+    // logFile << std::endl;
 
-    logFile.close();
+    // logFile.close();
 
     return new Mesh(verts, faces, boneWeights);
 }
