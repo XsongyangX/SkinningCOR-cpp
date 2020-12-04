@@ -77,12 +77,12 @@ float Mesh::Similarity(int vertexIndex, int triangleIndex)
     return ComputeVertexFaceSimilarity(vertexWeight, triangleWeight);
 }
 
-Eigen::SparseMatrix<float> Mesh::FindVertexWeight(int vertexIndex)
+const Eigen::SparseVector<float> Mesh::FindVertexWeight(int vertexIndex)
 {
     // Check if the vertices belong to the subdivided mesh
     auto restVertexCount = GetRestVertexCount();
 
-    Eigen::SparseMatrix<float> vertexWeight;
+    Eigen::SparseVector<float> vertexWeight;
 
     // check if the vertex belongs to a subdivision
     if (vertexIndex > restVertexCount - 1)
