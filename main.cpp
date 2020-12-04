@@ -72,12 +72,26 @@ int main(int argc, char * argv[])
     std::cout << message << std::endl;
     FreeErrorMessage(message);
 
-    std::cout << mesh->GetCentersOfRotation() << std::endl;
+    // read centers from disk
+    mesh->ReadCentersOfRotation(path);
+    auto readingCenters = HasFailedGettingCentersOfRotation(mesh);
+    std::cout << readingCenters << endl;
+    FreeErrorMessage(readingCenters);
+
+    std::cout << mesh->GetCenterCount() << std::endl;
     auto centerErrorMessage = HasFailedGettingCentersOfRotation(mesh);
     std::cout << centerErrorMessage << std::endl;
     FreeErrorMessage(centerErrorMessage);
 
-    mesh->Serialize(path);
-    cout << "Mesh serialized again at " << path << endl;
+    SerializeMesh(mesh, path.c_str());
+    auto serializationError = SerializationError(mesh);
+    if (strcmp(serializationError, ""))
+        cout << "Mesh serialized again at " << path << endl;
+    else
+    {
+        cout << serializationError << endl;
+    }
+    FreeErrorMessage(serializationError);
+    
     delete mesh;
 }

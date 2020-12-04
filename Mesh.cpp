@@ -149,10 +149,49 @@ Eigen::Vector3f Mesh::ComputeCenterOfRotation(int vertexIndex,
 
 void Mesh::Serialize(const std::string & path)
 {
-    SerializeVertices(vertices, path + std::string(".vertices"));
-    SerializeTriangles(triangles, path + std::string(".triangles"));
-    SerializeWeights(weights, path + std::string(".weights"));
+    try
+    {
+        SerializeVertices(vertices, path + std::string(".vertices"));
+        SerializeTriangles(triangles, path + std::string(".triangles"));
+        SerializeWeights(weights, path + std::string(".weights"));
 
-    if (areCentersComputed)
-        SerializeVertices(centersOfRotation, path + std::string(".centers"));
+        if (areCentersComputed)
+            SerializeVertices(centersOfRotation, path + std::string(".centers"));
+    }
+    catch(const std::exception& e)
+    {
+        this->failureContextMessage = e.what();
+    }
+}
+
+void Mesh::ReadCentersOfRotation(const std::string & path)
+{
+    // offset indices
+    this->indexOfCenter.clear();
+
+    int centerCount = 0;
+    for (int i = 0; i < this->weights.cols(); i++)
+    {
+        if (1 == this->weights.col(i).nonZeros())
+        {
+            this->indexOfCenter.push_back(-1);    
+        }
+        else
+        {
+            this->indexOfCenter.push_back(centerCount);
+            centerCount++;
+        }
+    }
+    // read from disk
+    try
+    {
+        auto centers = ReadVertices(path + std::string(".centers"));
+        this->centersOfRotation = centers;
+    }
+    catch(const std::exception& e)
+    {
+        this->failureContextMessage = e.what();
+    }
+
+    areCentersComputed = true;
 }

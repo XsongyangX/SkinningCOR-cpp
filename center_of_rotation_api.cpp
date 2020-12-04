@@ -159,14 +159,14 @@ CENTER_OF_ROTATION_API int GetRestFaceCount(Mesh *mesh)
 {
     return mesh->GetRestFaceCount();
 }
-CENTER_OF_ROTATION_API int GetSubdividedVertexCount(Mesh *mesh)
-{
-    return mesh->GetSubdividedVertexCount();
-}
-CENTER_OF_ROTATION_API int GetSubdividedFaceCount(Mesh *mesh)
-{
-    return mesh->GetSubdividedFaceCount();
-}
+// CENTER_OF_ROTATION_API int GetSubdividedVertexCount(Mesh *mesh)
+// {
+//     return mesh->GetSubdividedVertexCount();
+// }
+// CENTER_OF_ROTATION_API int GetSubdividedFaceCount(Mesh *mesh)
+// {
+//     return mesh->GetSubdividedFaceCount();
+// }
 
 // get centers of rotation
 CENTER_OF_ROTATION_API int GetCenterCount(Mesh * mesh)
@@ -202,4 +202,9 @@ CENTER_OF_ROTATION_API const char * HasFailedGettingCentersOfRotation(Mesh * mes
 CENTER_OF_ROTATION_API void SerializeMesh(Mesh * mesh, const char * path)
 {
     mesh->Serialize(std::string(path));
+}
+
+CENTER_OF_ROTATION_API const char * SerializationError(Mesh * mesh)
+{
+    return GetFailureMessage(mesh);
 }

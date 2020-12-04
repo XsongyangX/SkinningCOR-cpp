@@ -49,8 +49,8 @@ extern "C"
     // get debug data
     CENTER_OF_ROTATION_API int GetRestVertexCount(Mesh * mesh);
     CENTER_OF_ROTATION_API int GetRestFaceCount(Mesh * mesh);
-    CENTER_OF_ROTATION_API int GetSubdividedVertexCount(Mesh * mesh);
-    CENTER_OF_ROTATION_API int GetSubdividedFaceCount(Mesh * mesh);
+    // CENTER_OF_ROTATION_API int GetSubdividedVertexCount(Mesh * mesh);
+    // CENTER_OF_ROTATION_API int GetSubdividedFaceCount(Mesh * mesh);
 
     // get centers of rotation
     CENTER_OF_ROTATION_API int GetCenterCount(Mesh * mesh);
@@ -61,5 +61,7 @@ extern "C"
 
     // serialization
     CENTER_OF_ROTATION_API void SerializeMesh(Mesh * mesh, const char * path);
+    CENTER_OF_ROTATION_API void ReadCenters(Mesh * mesh, const char * path);
+    CENTER_OF_ROTATION_API const char * SerializationError(Mesh * mesh);
 }
 

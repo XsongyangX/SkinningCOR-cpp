@@ -7,8 +7,6 @@
 class Mesh
 {
 private:
-    // debug
-    bool failedConstruction = false;
 
     // rest pose
     const Eigen::MatrixXf vertices;
@@ -19,16 +17,17 @@ private:
 
     // centers of rotation
     bool areCentersComputed = false;
+    // -1 if the vertex has no center of rotation
     std::vector<int> indexOfCenter;
     Eigen::MatrixXf centersOfRotation;
 
-    // additional subdivision
-    // the index of a vertex here omits base vertex count
-    Eigen::MatrixXf subdividedVertices;
-    // the index of a face here omits base face count
-    Eigen::MatrixXi subdividedTriangles;
-    // position in this matrix represents indices of all vertices
-    Eigen::SparseMatrix<float> subdividedWeights;
+    // // additional subdivision
+    // // the index of a vertex here omits base vertex count
+    // Eigen::MatrixXf subdividedVertices;
+    // // the index of a face here omits base face count
+    // Eigen::MatrixXi subdividedTriangles;
+    // // position in this matrix represents indices of all vertices
+    // Eigen::SparseMatrix<float> subdividedWeights;
 
     // compute center of rotation for vertex at the given index
     // carry a cache to hasten computations
@@ -51,20 +50,21 @@ public:
     }
 
     int GetRestVertexCount() {return (int) vertices.rows();}
-    int GetSubdividedVertexCount() {return (int) subdividedVertices.rows();}
+    // int GetSubdividedVertexCount() {return (int) subdividedVertices.rows();}
     int GetRestFaceCount() {return (int) triangles.rows();}
-    int GetSubdividedFaceCount() {return (int) subdividedTriangles.rows();}
+    // int GetSubdividedFaceCount() {return (int) subdividedTriangles.rows();}
 
     int GetCenterCount();
     const Eigen::MatrixXf & GetCentersOfRotation();
 
     void Serialize(const std::string & path);
+    // Read from disk
+    void ReadCentersOfRotation(const std::string & path);
 #pragma endregion
 
     // null mesh for failed construction
     Mesh(std::string failureMessage)
     {
-        failedConstruction = true;
         failureContextMessage = failureMessage;
     }
 

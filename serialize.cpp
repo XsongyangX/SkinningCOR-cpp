@@ -120,12 +120,12 @@ Eigen::SparseMatrix<float> ReadWeights(const std::string &path, int rows, int co
 Eigen::MatrixXf ReadVertices(const std::string &path)
 {
     ifstream file;
-    file.open(path + string(".vertices"));
+    file.open(path);
 
     if(!file.good())
     {
         file.close();
-        string message = string("Cannot open file at: ") + string(path) + string(".vertices");
+        string message = string("Cannot open file at: ") + string(path);
         throw runtime_error(message.c_str());
     }
 
@@ -155,12 +155,12 @@ Eigen::MatrixXf ReadVertices(const std::string &path)
 Eigen::MatrixXi ReadTriangles(const std::string &path)
 {
     ifstream file;
-    file.open(path + string(".triangles"));
+    file.open(path);
 
     if(!file.good())
     {
         file.close();
-        string message = string("Cannot open file at: ") + string(path) + string(".triangles");
+        string message = string("Cannot open file at: ") + string(path);
         throw runtime_error(message.c_str());
     }
 
@@ -189,8 +189,8 @@ Eigen::MatrixXi ReadTriangles(const std::string &path)
 
 Mesh* ReadMesh(const string & path)
 {
-    auto vertices = ReadVertices(path);
-    auto triangles = ReadTriangles(path);
+    auto vertices = ReadVertices(path + string(".vertices"));
+    auto triangles = ReadTriangles(path + string(".triangles"));
 
     int rows = 0, cols = 0;
 
@@ -200,7 +200,7 @@ Mesh* ReadMesh(const string & path)
     if(!sizeFile.good())
     {
         sizeFile.close();
-        string message = string("Cannot open file at: ") + string(path) + string(".weights.size");
+        string message = string("Cannot open file at: ") + string(size);
         throw runtime_error(message.c_str());
     }
 
