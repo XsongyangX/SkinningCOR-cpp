@@ -1,13 +1,21 @@
 #pragma once
 
 #ifdef CENTER_OF_ROTATION_EXPORTS
-#define CENTER_OF_ROTATION_API __declspec(dllexport)
+    #ifdef __GNUC__
+        #define DLL_PUBLIC __attribute__ ((dllexport))
+    #else
+        #define CENTER_OF_ROTATION_API __declspec(dllexport)
+    #endif
 #else
 
 #ifdef CENTER_OF_ROTATION_DEBUG
-#define CENTER_OF_ROTATION_API
+    #define CENTER_OF_ROTATION_API
 #else
-#define CENTER_OF_ROTATION_API __declspec(dllimport)
+    #ifdef __GNUC__
+        #define DLL_PUBLIC __attribute__ ((dllimport))
+    #else
+        #define CENTER_OF_ROTATION_API __declspec(dllimport)
+    #endif
 #endif
 
 #endif
