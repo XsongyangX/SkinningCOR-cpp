@@ -142,7 +142,7 @@ Eigen::Vector3f Mesh::ComputeCenterOfRotation(int vertexIndex,
             + std::to_string(DIVISION_BY_ZERO_THRESHOLD)
             + std::string("; value found = ") 
             + std::to_string(denominator);
-        throw std::exception(message.c_str());
+        throw std::logic_error(message.c_str());
     }
     return nominator / denominator;
 }

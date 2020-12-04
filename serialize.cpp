@@ -90,7 +90,7 @@ std::vector<Eigen::Triplet<float>> read_triplets(const std::string &path)
     {
         file.close();
         string message = string("Cannot open file at: ") + string(path);
-        throw exception(message.c_str());
+        throw runtime_error(message.c_str());
     }
 
     string line;
@@ -126,7 +126,7 @@ Eigen::MatrixXf ReadVertices(const std::string &path)
     {
         file.close();
         string message = string("Cannot open file at: ") + string(path) + string(".vertices");
-        throw exception(message.c_str());
+        throw runtime_error(message.c_str());
     }
 
     vector<vector<string>> lines;
@@ -161,7 +161,7 @@ Eigen::MatrixXi ReadTriangles(const std::string &path)
     {
         file.close();
         string message = string("Cannot open file at: ") + string(path) + string(".triangles");
-        throw exception(message.c_str());
+        throw runtime_error(message.c_str());
     }
 
     vector<vector<string>> lines;
@@ -201,7 +201,7 @@ Mesh ReadMesh(const string & path)
     {
         sizeFile.close();
         string message = string("Cannot open file at: ") + string(path) + string(".weights.size");
-        throw exception(message.c_str());
+        throw runtime_error(message.c_str());
     }
 
     string line;
