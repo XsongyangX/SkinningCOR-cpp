@@ -71,10 +71,10 @@ void Mesh::ComputeCentersOfRotation()
 float Mesh::Similarity(int vertexIndex, int triangleIndex)
 {
 
-    Eigen::SparseMatrix<float> vertexWeight = FindVertexWeight(vertexIndex);
-    Eigen::SparseMatrix<float> triangleWeight = FindTriangleWeight(triangleIndex);
+    auto vertexWeight = FindVertexWeight(vertexIndex);
+    auto triangleWeight = FindTriangleWeight(triangleIndex);
 
-    return ComputeVertexFaceSimilarity(vertexWeight, triangleWeight);
+    return ComputeSimilarity(vertexWeight, triangleWeight);
 }
 
 const Eigen::SparseVector<float> Mesh::FindVertexWeight(int vertexIndex)
@@ -93,7 +93,7 @@ const Eigen::SparseVector<float> Mesh::FindVertexWeight(int vertexIndex)
     return vertexWeight;
 }
 
-Eigen::SparseMatrix<float> Mesh::FindTriangleWeight(int triangleIndex)
+const Eigen::SparseVector<float> Mesh::FindTriangleWeight(int triangleIndex)
 {
     auto restTriangleCount = GetRestFaceCount();
     
@@ -105,7 +105,7 @@ Eigen::SparseMatrix<float> Mesh::FindTriangleWeight(int triangleIndex)
     else
         triangle = this->triangles.row(triangleIndex);
 
-    Eigen::SparseMatrix<float> triangleWeight = 
+    Eigen::SparseVector<float> triangleWeight = 
         (FindVertexWeight(triangle.x()) + FindVertexWeight(triangle.y())
         + FindVertexWeight(triangle.z())) / 3;
 

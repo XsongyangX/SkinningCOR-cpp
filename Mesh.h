@@ -34,7 +34,7 @@ private:
     Eigen::Vector3f ComputeCenterOfRotation(int index);
 
     // weight of a triangle is the average of its vertices
-    Eigen::SparseMatrix<float> FindTriangleWeight(int triangleIndex);
+    const Eigen::SparseVector<float> FindTriangleWeight(int triangleIndex);
     const Eigen::SparseVector<float> FindVertexWeight(int vertexIndex);
 
 public:
