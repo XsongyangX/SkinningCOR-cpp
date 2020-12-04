@@ -62,7 +62,7 @@ int main(int argc, char * argv[])
     {
         mesh = ReadMesh(path);
     }
-    catch (exception e)
+    catch (const exception & e)
     {
         cerr << e.what() << endl;
         cerr << "Does the file exist and is readable?" << endl;
