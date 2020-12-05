@@ -62,6 +62,7 @@ extern "C"
     // serialization
     CENTER_OF_ROTATION_API void SerializeMesh(Mesh * mesh, const char * path);
     CENTER_OF_ROTATION_API void ReadCenters(Mesh * mesh, const char * path);
+    CENTER_OF_ROTATION_API void SerializeCenters(Mesh * mesh, const char * path);
     CENTER_OF_ROTATION_API const char * SerializationError(Mesh * mesh);
 }
 

@@ -204,6 +204,16 @@ CENTER_OF_ROTATION_API void SerializeMesh(Mesh * mesh, const char * path)
     mesh->Serialize(std::string(path));
 }
 
+CENTER_OF_ROTATION_API void ReadCenters(Mesh * mesh, const char * path)
+{
+    mesh->ReadCentersOfRotation(path);
+}
+
+CENTER_OF_ROTATION_API void SerializeCenters(Mesh * mesh, const char * path)
+{
+    mesh->WriteCentersOfRotation(path);
+}
+
 CENTER_OF_ROTATION_API const char * SerializationError(Mesh * mesh)
 {
     return GetFailureMessage(mesh);

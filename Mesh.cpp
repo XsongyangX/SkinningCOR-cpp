@@ -195,3 +195,13 @@ void Mesh::ReadCentersOfRotation(const std::string & path)
 
     areCentersComputed = true;
 }
+
+void Mesh::WriteCentersOfRotation(const std::string & path)
+{
+    if (areCentersComputed)
+    {
+        SerializeVertices(centersOfRotation, path + std::string(".centers"));
+    }
+    else
+        throw std::runtime_error("Centers are not computed yet");
+}

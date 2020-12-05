@@ -60,6 +60,8 @@ public:
     void Serialize(const std::string & path);
     // Read from disk
     void ReadCentersOfRotation(const std::string & path);
+    // Write to disk
+    void WriteCentersOfRotation(const std::string & path);
 #pragma endregion
 
     // null mesh for failed construction
