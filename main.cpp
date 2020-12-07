@@ -51,11 +51,12 @@ int main(int argc, char * argv[])
     // from disk
     if (argc != 2)
     {
-        cerr << "Usage: ./skinning_COR-bin path-to-file" << endl;
+        cerr << "Usage: ./skinning_COR-bin path-to-file(base name, no extension)" << endl;
         cerr << "ex: ./skinning_COR-bin ../../logs/Beta_Joints" << endl;
         exit(1);
     }
-
+    
+    // read mesh from disk
     auto path = string(argv[1]);
     Mesh * mesh;
     try
@@ -73,25 +74,49 @@ int main(int argc, char * argv[])
     FreeErrorMessage(message);
 
     // read centers from disk
-    mesh->ReadCentersOfRotation(path);
+    ReadCenters(mesh, path.c_str());
     auto readingCenters = HasFailedGettingCentersOfRotation(mesh);
     std::cout << readingCenters << endl;
     FreeErrorMessage(readingCenters);
 
+    // output centers count
     std::cout << mesh->GetCenterCount() << std::endl;
     auto centerErrorMessage = HasFailedGettingCentersOfRotation(mesh);
     std::cout << centerErrorMessage << std::endl;
     FreeErrorMessage(centerErrorMessage);
 
-    SerializeMesh(mesh, path.c_str());
-    auto serializationError = SerializationError(mesh);
-    if (strcmp(serializationError, ""))
-        cout << "Mesh serialized again at " << path << endl;
-    else
+    // compute a deformation
+    const Eigen::Vector4f identity = Eigen::Quaternionf::Identity().coeffs();
+    vector<BoneTransformation> transformations(mesh->GetBoneCount());
+    for_each(transformations.begin(), transformations.end(),
+        [&](BoneTransformation b)
+        {
+            b = BoneTransformation{
+                identity.w(), identity.x(), identity.y(), identity.z(),
+                0,0,0};
+        }
+    );
+
+    vector<float> transformed(3 * mesh->GetRestVertexCount());
+    for_each(transformed.begin(), transformed.end(), 
+        [](float element)
+        {
+            element = 0;
+        }
+    );
+
+    Animate(mesh, transformations.data(), transformed.data());
+    auto animationErrorMessage = AnimationError(mesh);
+    std::cout << animationErrorMessage << std::endl;
+    FreeErrorMessage(animationErrorMessage);
+
+
+    for (int i = 0; i < 10; i+= 3)
     {
-        cout << serializationError << endl;
+        cout << transformed[i] 
+            << ", " << transformed[i + 1] << ", " 
+            << transformed[i + 2] << endl;
     }
-    FreeErrorMessage(serializationError);
-    
+
     delete mesh;
 }

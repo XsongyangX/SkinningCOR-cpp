@@ -27,6 +27,17 @@ typedef struct _boneWeight {
     float weight;
 } BoneWeight;
 
+// Quaternion floats + translation floats
+typedef struct _boneTransformation {
+    float quaternionW;
+    float quaternionX;
+    float quaternionY;
+    float quaternionZ;
+    float translationX;
+    float translationY;
+    float translationZ;
+} BoneTransformation;
+
 // Export interface
 extern "C"
 {
@@ -64,5 +75,11 @@ extern "C"
     CENTER_OF_ROTATION_API void ReadCenters(Mesh * mesh, const char * path);
     CENTER_OF_ROTATION_API void SerializeCenters(Mesh * mesh, const char * path);
     CENTER_OF_ROTATION_API const char * SerializationError(Mesh * mesh);
+
+    // runtime animation
+    // CENTER_OF_ROTATION_API void SetMeshVertexBuffer(Mesh * mesh, void * vertexBufferHandle);
+    CENTER_OF_ROTATION_API void Animate(Mesh * mesh,
+        BoneTransformation * transformations, float* transformed);
+    CENTER_OF_ROTATION_API const char * AnimationError(Mesh * mesh);
 }
 

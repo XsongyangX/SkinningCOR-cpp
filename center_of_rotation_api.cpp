@@ -5,9 +5,11 @@
 
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
+#include <Eigen/Geometry>
 
 #include <vector>
 // #include <fstream>
+// #include <iostream>
 #include <sstream>
 #include <string.h>
 
@@ -215,6 +217,63 @@ CENTER_OF_ROTATION_API void SerializeCenters(Mesh * mesh, const char * path)
 }
 
 CENTER_OF_ROTATION_API const char * SerializationError(Mesh * mesh)
+{
+    return GetFailureMessage(mesh);
+}
+
+// runtime algorithm
+// Transformations are in the frame of the vertices
+CENTER_OF_ROTATION_API void Animate(Mesh * mesh,
+    BoneTransformation * transformations, float* transformed)
+{
+    std::vector<Eigen::Quaternionf> rotations;
+    std::vector<Eigen::Vector3f> translations;
+
+    for (int i = 0; i < mesh->GetBoneCount(); i++)
+    {
+        const auto & transformation = transformations[i];
+
+        rotations.push_back(Eigen::Quaternionf(
+            transformation.quaternionW,
+            transformation.quaternionX,
+            transformation.quaternionY,
+            transformation.quaternionZ
+        ));
+
+        translations.push_back(Eigen::Vector3f(
+            transformation.translationX,
+            transformation.translationY,
+            transformation.translationZ
+        ));
+    }
+    
+    Eigen::MatrixXf newVertices;
+    try
+    {
+        newVertices = mesh->SkinCOR(rotations, translations);
+    }
+    catch(const std::exception& e)
+    {
+        mesh->failureContextMessage = e.what();
+    }
+
+    // write vertex positions
+    for (int i = 0; i < (int) newVertices.rows(); i++)
+    {
+        Eigen::Vector3f vertex = newVertices.row(i);
+        *transformed = vertex.x();
+        *(transformed + 1) = vertex.y();
+        *(transformed + 2) = vertex.z();
+
+        // if (i < 10)
+        //     std::cout << vertex << std::endl;
+
+        transformed += 3; // struct of 3 floats
+    }
+    
+}
+
+CENTER_OF_ROTATION_API const char * AnimationError(Mesh * mesh)
 {
     return GetFailureMessage(mesh);
 }

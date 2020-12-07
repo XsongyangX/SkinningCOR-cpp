@@ -142,7 +142,7 @@ Eigen::Vector3f Mesh::ComputeCenterOfRotation(int vertexIndex,
             + std::to_string(DIVISION_BY_ZERO_THRESHOLD)
             + std::string("; value found = ") 
             + std::to_string(denominator);
-        throw std::logic_error(message.c_str());
+        throw std::logic_error(message);
     }
     return nominator / denominator;
 }
@@ -204,4 +204,123 @@ void Mesh::WriteCentersOfRotation(const std::string & path)
     }
     else
         throw std::runtime_error("Centers are not computed yet");
+}
+
+// Assumes normalized quaternions
+const Eigen::MatrixXf Mesh::SkinCOR(const std::vector<Eigen::Quaternionf> & rotations, 
+    const std::vector<Eigen::Vector3f> & translations)
+{
+    if (rotations.size() != translations.size())
+    {
+        std::string message = "Unequal amounts of rotations and translations: ";
+        message += std::to_string(rotations.size()) + std::string(" ")
+            + std::to_string(translations.size());
+        throw std::runtime_error(message);
+    }
+
+    Eigen::MatrixXf newVertices(this->vertices.rows(), 3);
+
+    // Get an equivalent of rotations in matrices
+    std::vector<Eigen::Matrix3f> matrixRotations;
+    matrixRotations.reserve(rotations.size());
+    for (auto &&i : rotations)
+    {
+        matrixRotations.push_back(i.toRotationMatrix());
+    }
+    
+    // for each vertex
+    for (int i = 0; i < (int) this->vertices.rows(); i++)
+    {
+        newVertices.row(i) = DeformVertex(i, rotations, matrixRotations, translations);
+    }
+
+    return newVertices;
+}
+
+// Runtime algorithm on one vertex
+const Eigen::Vector3f Mesh::DeformVertex(int index, 
+    const std::vector<Eigen::Quaternionf> & rotations,
+    const std::vector<Eigen::Matrix3f> & matrixRotations,
+    const std::vector<Eigen::Vector3f> & translations)
+{
+    Eigen::Vector4f quaternion;
+    quaternion.setZero();
+
+    const Eigen::SparseVector<float> & skinWeights = weights.col(index);
+
+    for (Eigen::SparseVector<float>::InnerIterator it(skinWeights); it; ++it)
+    {
+        auto boneIndex = it.index();
+        auto boneWeight = it.value();
+
+        // this weighted quaternion
+        Eigen::Vector4f weighted = boneWeight * rotations[boneIndex].coeffs();
+
+        // quaternion arithmetic
+        if (quaternion.isZero()) quaternion = weighted;
+        else
+        {
+            auto dot = quaternion.dot(weighted);
+            if (dot >= 0) quaternion += weighted;
+            else quaternion -= weighted;
+        }
+    }
+
+    // quaternion summation is turned into a rotation matrix
+    quaternion.normalize();
+    auto summedQuaternionMatrix = Eigen::Quaternionf(quaternion).toRotationMatrix();
+    
+    // get LBS estimates
+    auto lbs = VertexLBSTransformation(index, matrixRotations, translations);
+    const auto & lbsRotation = lbs.first;
+    const auto & lbsTranslation = lbs.second;
+
+    // center of rotation
+    const auto centerIndex = this->indexOfCenter[index];
+
+    // get COR modified translation
+    Eigen::Vector3f finalTranslation;
+
+    // no center case
+    if (centerIndex == -1)
+    {
+        finalTranslation = lbsTranslation;
+    }
+    else
+    {
+        const Eigen::Vector3f center = this->centersOfRotation.row(centerIndex);
+        finalTranslation = 
+            lbsRotation * center
+            + lbsTranslation 
+            - summedQuaternionMatrix * center
+        ;
+    }
+
+    // compute vertex position
+    const Eigen::Vector3f restPosition = this->vertices.row(index);
+    return summedQuaternionMatrix * restPosition + finalTranslation;
+}
+
+const std::pair<Eigen::Matrix3f, Eigen::Vector3f> Mesh::VertexLBSTransformation(int index,
+    const std::vector<Eigen::Matrix3f> & matrixRotations,
+    const std::vector<Eigen::Vector3f> & translations)
+{
+    const Eigen::SparseVector<float> & skinWeights = weights.col(index);
+
+    // resulting transformations
+    Eigen::Matrix3f rotation;
+    rotation.setZero();
+    Eigen::Vector3f translation;
+    translation.setZero();
+
+    for (Eigen::SparseVector<float>::InnerIterator it(skinWeights); it; ++it)
+    {
+        auto boneIndex = it.index();
+        auto boneWeight = it.value();
+
+        rotation += boneWeight * matrixRotations[boneIndex];
+        translation += boneWeight * translations[boneIndex];
+    }
+
+    return std::make_pair(rotation, translation);
 }

@@ -2,6 +2,7 @@
 
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
+#include <Eigen/Geometry>
 #include <string>
 
 class Mesh
@@ -39,11 +40,22 @@ private:
     void FindTriangleWeight(int triangleIndex,
         std::vector<Eigen::SparseVector<float>> & cacheTriangleWeights);
 
+    // Runtime algorithm on one vertex
+    const Eigen::Vector3f DeformVertex(int index, 
+        const std::vector<Eigen::Quaternionf> & rotations,
+        const std::vector<Eigen::Matrix3f> & matrixRotations,
+        const std::vector<Eigen::Vector3f> & translations);
+
+    const std::pair<Eigen::Matrix3f, Eigen::Vector3f> VertexLBSTransformation(int index,
+        const std::vector<Eigen::Matrix3f> & matrixRotations,
+        const std::vector<Eigen::Vector3f> & translations);
+
 public:
+    
+#pragma region
     // debug
     std::string failureContextMessage;
 
-#pragma region
     void ResetFailureMessage()
     {
         failureContextMessage = "";
@@ -56,6 +68,8 @@ public:
 
     int GetCenterCount();
     const Eigen::MatrixXf & GetCentersOfRotation();
+
+    int GetBoneCount() {return (int) weights.rows();};
 
     void Serialize(const std::string & path);
     // Read from disk
@@ -80,9 +94,17 @@ public:
     // Compute the centers of rotations and store them in a private field
     void ComputeCentersOfRotation();
 
-    // Compute the skinning weight distance between two vertices: norm(wi - wj)
-    float SkinningWeightDistance(int vertexIndex1, int vertexIndex2);
+    // additional subdivision
+    // // Compute the skinning weight distance between two vertices: norm(wi - wj)
+    // float SkinningWeightDistance(int vertexIndex1, int vertexIndex2);
 
-    // Subdivide the mesh to get skinning weight distances under a threshold for all triangles
-    void SubdivideTriangles(float threshold);
+    // // Subdivide the mesh to get skinning weight distances under a threshold for all triangles
+    // void SubdivideTriangles(float threshold);
+
+    // in case performance is an issue
+    // void SetMeshVertexBuffer(void * );
+
+    // runtime algorithm
+    const Eigen::MatrixXf SkinCOR(const std::vector<Eigen::Quaternionf> & rotations,
+        const std::vector<Eigen::Vector3f> & translations);
 };
