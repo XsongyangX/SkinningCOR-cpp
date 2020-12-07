@@ -87,13 +87,22 @@ int main(int argc, char * argv[])
 
     // compute a deformation
     const Eigen::Vector4f identity = Eigen::Quaternionf::Identity().coeffs();
-    vector<BoneTransformation> transformations(mesh->GetBoneCount());
-    for_each(transformations.begin(), transformations.end(),
-        [&](BoneTransformation b)
+    vector<BoneQuaternion> rotations(mesh->GetBoneCount());
+    vector<BoneTranslation> translations(mesh->GetBoneCount());
+    for_each(rotations.begin(), rotations.end(),
+        [&](BoneQuaternion b)
         {
-            b = BoneTransformation{
-                identity.w(), identity.x(), identity.y(), identity.z(),
-                0,0,0};
+            b = BoneQuaternion{
+                identity.w(), identity.x(), identity.y(), identity.z()
+            };
+        }
+    );
+    for_each(translations.begin(), translations.end(),
+        [](BoneTranslation b)
+        {
+            b = BoneTranslation{
+                0, 0, 0
+            };
         }
     );
 
@@ -105,7 +114,7 @@ int main(int argc, char * argv[])
         }
     );
 
-    Animate(mesh, transformations.data(), transformed.data());
+    Animate(mesh, rotations.data(), translations.data(), transformed.data());
     auto animationErrorMessage = AnimationError(mesh);
     std::cout << animationErrorMessage << std::endl;
     FreeErrorMessage(animationErrorMessage);

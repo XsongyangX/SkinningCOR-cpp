@@ -223,27 +223,29 @@ CENTER_OF_ROTATION_API const char * SerializationError(Mesh * mesh)
 
 // runtime algorithm
 // Transformations are in the frame of the vertices
-CENTER_OF_ROTATION_API void Animate(Mesh * mesh,
-    BoneTransformation * transformations, float* transformed)
+CENTER_OF_ROTATION_API void Animate(Mesh * mesh, BoneQuaternion * boneRotations,
+    BoneTranslation * boneTranslations, float* transformed)
 {
     std::vector<Eigen::Quaternionf> rotations;
     std::vector<Eigen::Vector3f> translations;
 
     for (int i = 0; i < mesh->GetBoneCount(); i++)
     {
-        const auto & transformation = transformations[i];
+        const auto & boneRotation = boneRotations[i];
 
         rotations.push_back(Eigen::Quaternionf(
-            transformation.quaternionW,
-            transformation.quaternionX,
-            transformation.quaternionY,
-            transformation.quaternionZ
+            boneRotation.quaternionW,
+            boneRotation.quaternionX,
+            boneRotation.quaternionY,
+            boneRotation.quaternionZ
         ));
 
+        const auto & boneTranslation = boneTranslations[i];
+
         translations.push_back(Eigen::Vector3f(
-            transformation.translationX,
-            transformation.translationY,
-            transformation.translationZ
+            boneTranslation.translationX,
+            boneTranslation.translationY,
+            boneTranslation.translationZ
         ));
     }
     
