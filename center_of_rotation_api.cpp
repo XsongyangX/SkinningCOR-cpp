@@ -229,6 +229,10 @@ CENTER_OF_ROTATION_API void Animate(Mesh * mesh, BoneQuaternion * boneRotations,
     std::vector<Eigen::Quaternionf> rotations;
     std::vector<Eigen::Vector3f> translations;
 
+    // // debug
+    // std::ofstream logFile;
+    // logFile.open("C:/Users/Song/Documents/UDEM/ift6113/project/skinning_cor/logs/animation.log");
+
     for (int i = 0; i < mesh->GetBoneCount(); i++)
     {
         const auto & boneRotation = boneRotations[i];
@@ -247,8 +251,17 @@ CENTER_OF_ROTATION_API void Animate(Mesh * mesh, BoneQuaternion * boneRotations,
             boneTranslation.translationY,
             boneTranslation.translationZ
         ));
+
+        // // debug
+        // logFile << boneRotation.quaternionW << " "
+        //     << boneRotation.quaternionX << " "
+        //     << boneRotation.quaternionY << " "
+        //     << boneRotation.quaternionZ << " " << std::endl;
+        // logFile << boneTranslation.translationX << " "
+        //     << boneTranslation.translationY << " "
+        //     << boneTranslation.translationZ << " " << std::endl;
     }
-    
+
     Eigen::MatrixXf newVertices;
     try
     {
@@ -258,6 +271,8 @@ CENTER_OF_ROTATION_API void Animate(Mesh * mesh, BoneQuaternion * boneRotations,
     {
         mesh->failureContextMessage = e.what();
     }
+
+    // logFile << newVertices.topRows(5) << std::endl;
 
     // write vertex positions
     for (int i = 0; i < (int) newVertices.rows(); i++)
@@ -273,6 +288,8 @@ CENTER_OF_ROTATION_API void Animate(Mesh * mesh, BoneQuaternion * boneRotations,
         transformed += 3; // struct of 3 floats
     }
     
+    // // debug
+    // logFile.close();
 }
 
 CENTER_OF_ROTATION_API const char * AnimationError(Mesh * mesh)

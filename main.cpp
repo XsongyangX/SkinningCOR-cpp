@@ -87,18 +87,22 @@ int main(int argc, char * argv[])
 
     // compute a deformation
     const Eigen::Vector4f identity = Eigen::Quaternionf::Identity().coeffs();
+    cout << "Identity quaternion is " << identity << endl;
     vector<BoneQuaternion> rotations(mesh->GetBoneCount());
     vector<BoneTranslation> translations(mesh->GetBoneCount());
     for_each(rotations.begin(), rotations.end(),
-        [&](BoneQuaternion b)
+        [&](BoneQuaternion &b)
         {
-            b = BoneQuaternion{
-                identity.w(), identity.x(), identity.y(), identity.z()
+            b = {
+                .quaternionX = identity.x(),
+                .quaternionY = identity.y(),
+                .quaternionZ = identity.z(),
+                .quaternionW = identity.w(),
             };
         }
     );
     for_each(translations.begin(), translations.end(),
-        [](BoneTranslation b)
+        [](BoneTranslation &b)
         {
             b = BoneTranslation{
                 0, 0, 0

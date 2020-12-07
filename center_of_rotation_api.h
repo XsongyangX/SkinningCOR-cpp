@@ -29,10 +29,10 @@ typedef struct _boneWeight {
 
 // Quaternion floats + translation floats
 typedef struct _boneRotation {
-    float quaternionW;
     float quaternionX;
     float quaternionY;
     float quaternionZ;
+    float quaternionW;
 } BoneQuaternion;
 
 typedef struct _boneTranslation {
