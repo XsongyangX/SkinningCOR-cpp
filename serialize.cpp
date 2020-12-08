@@ -26,6 +26,7 @@ void SerializeTriangles(const Eigen::MatrixXi &triangles, const std::string &pat
 }
 
 // Matrix to triplets
+// https://stackoverflow.com/questions/28685877/convert-an-eigen-matrix-to-triplet-form-c
 std::vector<Eigen::Triplet<float>> to_triplets(const Eigen::SparseMatrix<float> &M)
 {
     std::vector<Eigen::Triplet<float>> v;
@@ -55,6 +56,7 @@ void SerializeWeights(const Eigen::SparseMatrix<float> &weights, const std::stri
 }
 
 // Read one line of data separated by spaces
+// https://stackoverflow.com/questions/12153573/c11-regex-token-iterator
 std::vector<std::string> tokenize(const std::string &line, int expectedTokenCount)
 {
     // Tokenization (non-matched fragments)
