@@ -6,6 +6,7 @@
 
 #include "Mesh.h"
 #include "serialize.h"
+// #include "viewer.h"
 #define CENTER_OF_ROTATION_DEBUG
 #include "center_of_rotation_api.h"
 
@@ -123,13 +124,14 @@ int main(int argc, char * argv[])
     std::cout << animationErrorMessage << std::endl;
     FreeErrorMessage(animationErrorMessage);
 
-
     for (int i = 0; i < 10; i+= 3)
     {
         cout << transformed[i] 
             << ", " << transformed[i + 1] << ", " 
             << transformed[i + 2] << endl;
     }
+
+    // view_points(*mesh);
 
     delete mesh;
 }

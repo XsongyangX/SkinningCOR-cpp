@@ -61,6 +61,9 @@ public:
         failureContextMessage = "";
     }
 
+    const Eigen::MatrixXf & GetVertices() const {return vertices;}
+    const Eigen::MatrixXi & GetFaces() const {return triangles;}
+
     int GetRestVertexCount() {return (int) vertices.rows();}
     // int GetSubdividedVertexCount() {return (int) subdividedVertices.rows();}
     int GetRestFaceCount() {return (int) triangles.rows();}
@@ -69,7 +72,7 @@ public:
     int GetCenterCount();
     const Eigen::MatrixXf & GetCentersOfRotation();
 
-    int GetBoneCount() {return (int) weights.rows();};
+    int GetBoneCount() {return (int) weights.rows();}
 
     void Serialize(const std::string & path);
     // Read from disk
